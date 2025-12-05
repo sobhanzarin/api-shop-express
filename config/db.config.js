@@ -1,28 +1,15 @@
 const dotenv = require("dotenv");
-dotenv.config();
 const { Sequelize } = require("@sequelize/core");
+dotenv.config();
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    dialect: process.env.DB_DRIVE,
-    host: process.env.DB_HOST,
-    logging: false,
-  }
-);
+const sequelize = new Sequelize({
+  dialect: "mysql",
+  database: process.env.BD_NAME,
+  user: process.env.DB_USER,
+  password: "",
+  port: 3306,
+  host: process.env.DB_HOST,
+  logging: false,
+});
 
-const connectDB = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("connect to db successfully");
-  } catch (error) {
-    console.log("connect to db field : ", error);
-  }
-};
-
-module.exports = {
-  sequelize,
-  connectDB,
-};
+module.exports = sequelize;
