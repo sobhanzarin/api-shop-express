@@ -1,8 +1,10 @@
 const sequelize = require("../config/db.config");
+const OtpCode = require("./otp_user.model");
 const Product = require("./product.model");
 const ProductColor = require("./product_color.model");
 const ProductDetail = require("./product_detail.model");
 const ProductSize = require("./product_size.model");
+const User = require("./user.model");
 
 // product -> product details
 Product.hasMany(ProductDetail, {
@@ -49,6 +51,20 @@ ProductSize.belongsTo(Product, {
   foreignKey: {
     name: "productId",
     onDelete: "CASCADE",
+  },
+});
+// user -> otp
+User.hasMany(OtpCode, {
+  as: "otp",
+  foreignKey: {
+    name: "userId",
+  },
+});
+
+OtpCode.belongsTo(User, {
+  as: "user",
+  foreignKey: {
+    name: "userId",
   },
 });
 

@@ -2,7 +2,7 @@ const { Model, DataTypes } = require("@sequelize/core");
 const sequelize = require("../config/db.config");
 
 class OtpCode extends Model {}
-User.init(
+OtpCode.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     userId: { type: DataTypes.INTEGER, allowNull: false },

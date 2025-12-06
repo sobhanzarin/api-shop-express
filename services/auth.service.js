@@ -1,3 +1,4 @@
+const createHttpError = require("http-errors");
 const OtpCode = require("../models/otp_user.model");
 const User = require("../models/user.model");
 const { randomInt } = require("crypto");
@@ -26,7 +27,14 @@ async function sendOtpService(mobile) {
     codeOtp,
   };
 }
-async function checkOtpService(mobile, code) {}
+async function checkOtpService(mobile, code) {
+  const nowDate = new Date();
+  const user = await User.findOne({
+    where: { mobile },
+    include: [{ model: OtpCode, as: "otp" }],
+  });
+  if (!user) throw createHttpError(401, "کابری وجود نداشت،  لطفا وارد شوید");
+}
 
 module.exports = {
   sendOtpService,
