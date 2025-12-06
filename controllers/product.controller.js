@@ -1,6 +1,8 @@
 const {
-  createProductservice,
+  createProductService,
   getProductsService,
+  findProductByIdService,
+  deleteProductServices,
 } = require("../services/product.service");
 
 async function createProductHandler(req, res, next) {
@@ -26,7 +28,7 @@ async function createProductHandler(req, res, next) {
       count,
       description,
     };
-    const result = await createProductservice(data);
+    const result = await createProductService(data);
     return res.json({
       error: null,
       data: result,
@@ -46,7 +48,33 @@ async function getProductsHandler(req, res, next) {
     next(error);
   }
 }
+async function findProductByIdHandler(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await findProductByIdService(id);
+    return res.json({
+      error: null,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+async function deleteProductHandler(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await deleteProductServices(id);
+    return res.json({
+      error: null,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 module.exports = {
   createProductHandler,
   getProductsHandler,
+  findProductByIdHandler,
+  deleteProductHandler,
 };

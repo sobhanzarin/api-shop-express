@@ -88,8 +88,36 @@ async function getProductsService() {
     products,
   };
 }
-
+async function findProductByIdService(id) {
+  const product = Product.findOne({
+    where: { id },
+    include: [
+      { model: ProductDetail, as: "details" },
+      { model: ProductColor, as: "colors" },
+      { model: ProductSize, as: "sizes" },
+    ],
+    attributes: {
+      exclude: ["updated_at", "created_at"],
+    },
+  });
+  if (!product) {
+    throw createHttpError(404, "محصولی یافت نشد.");
+  }
+  return {
+    product,
+  };
+}
+async function deleteProductServices(id) {
+  const product = await Product.findByPk(id);
+  if (!product) throw createHttpError(404, "محصولی یافت نشد");
+  await product.destroy();
+  return {
+    message: "محصول حذف شد",
+  };
+}
 module.exports = {
-  createProductservice,
+  createProductService,
   getProductsService,
+  findProductByIdService,
+  deleteProductServices,
 };
