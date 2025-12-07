@@ -2,6 +2,10 @@ const createHttpError = require("http-errors");
 const OtpCode = require("../models/otp_user.model");
 const User = require("../models/user.model");
 const { randomInt } = require("crypto");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../utils/jwt.token");
 
 async function sendOtpService(mobile) {
   const codeOtp = randomInt(10000, 99999);
@@ -33,7 +37,36 @@ async function checkOtpService(mobile, code) {
     where: { mobile },
     include: [{ model: OtpCode, as: "otp" }],
   });
+  if (user.ban_until && user.ban_until > nowDate) {
+    throw createHttpError(
+      401,
+      "اکانت شما غیرفعال شده است، دقایقی دیگر امتحان کنید"
+    );
+  }
+  if (user.ban_until && user.ban_until <= now) {
+    user.ban_until = null;
+    user.wrong_count = 0;
+    await user.save();
+  }
   if (!user) throw createHttpError(401, "کابری وجود نداشت،  لطفا وارد شوید");
+  if (user?.otp?.expires_otp < nowDate) {
+    user.wrong_count += 1;
+    user.save();
+    throw createHttpError(401, "کد شما منقضی شده.");
+  }
+  if (user?.otp?.expires_otp !== code) {
+    user.wrong_count += 1;
+    user.save();
+    throw createHttpError(401, "کد وارد شده درست مطابقت ندارد");
+  }
+  user.ban_until = null;
+  user.wrong_count = 0;
+  user.save();
+  const accessToken = generateAccessToken({ userId: user.id });
+  return {
+    message: "ورود با موفقیت.",
+    accessToken,
+  };
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-const { sendOtpService } = require("../services/auth.service");
+const { sendOtpService, checkOtpService } = require("../services/auth.service");
 
 async function sendOtpHandler(req, res, next) {
   try {
@@ -12,7 +12,14 @@ async function sendOtpHandler(req, res, next) {
     next(error);
   }
 }
-async function checkOtpHandler(mobile, code) {}
+async function checkOtpHandler(mobile, code) {
+  const { mobile, code } = req.body;
+  const result = await checkOtpService(mobile, code);
+  return res.json({
+    error: null,
+    data: result,
+  });
+}
 
 module.exports = {
   sendOtpHandler,
