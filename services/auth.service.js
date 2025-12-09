@@ -43,7 +43,7 @@ async function checkOtpService(mobile, code) {
       "اکانت شما غیرفعال شده است، دقایقی دیگر امتحان کنید"
     );
   }
-  if (user.ban_until && user.ban_until <= now) {
+  if (user.ban_until && user.ban_until <= nowDate) {
     user.ban_until = null;
     user.wrong_count = 0;
     await user.save();
@@ -51,21 +51,23 @@ async function checkOtpService(mobile, code) {
   if (!user) throw createHttpError(401, "کابری وجود نداشت،  لطفا وارد شوید");
   if (user?.otp?.expires_otp < nowDate) {
     user.wrong_count += 1;
-    user.save();
+    await user.save();
     throw createHttpError(401, "کد شما منقضی شده.");
   }
-  if (user?.otp?.expires_otp !== code) {
+  if (user?.otp?.otp !== code) {
     user.wrong_count += 1;
-    user.save();
+    await user.save();
     throw createHttpError(401, "کد وارد شده درست مطابقت ندارد");
   }
   user.ban_until = null;
   user.wrong_count = 0;
-  user.save();
+  await user.save();
   const accessToken = generateAccessToken({ userId: user.id });
+  const refreshToken = generateRefreshToken({ userId: user.id });
   return {
     message: "ورود با موفقیت.",
     accessToken,
+    refreshToken,
   };
 }
 
