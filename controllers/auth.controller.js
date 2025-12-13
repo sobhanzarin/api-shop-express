@@ -1,6 +1,14 @@
-const { sendOtpService, checkOtpService } = require("../services/auth.service");
-const cookie = require("cookie-parser");
-const NodeEnv = require("../utils/constanst/env.enum");
+const createHttpError = require("http-errors");
+const {
+  sendOtpService,
+  checkOtpService,
+  verifyRefreshTokenService,
+} = require("../services/auth.service");
+const NodeEnv = require("../utils/constants/env.enum");
+const {
+  verifyRefreshToken,
+  generateAccessToken,
+} = require("../utils/jwt.token");
 
 async function sendOtpHandler(req, res, next) {
   try {
@@ -25,6 +33,7 @@ async function checkOtpHandler(req, res, next) {
         secure: process.env.NODE_ENV == NodeEnv.production,
         httpOnly: true,
       })
+      .header("Authorization", accessToken)
       .status(200)
       .json({
         error: null,
@@ -34,8 +43,22 @@ async function checkOtpHandler(req, res, next) {
     next(error);
   }
 }
+async function verifyRefreshTokenHandler(req, res, next) {
+  try {
+    const refreshToken = req.cookies["refreshToken"];
+    if (!refreshToken) throw createHttpError(401, "لطفا ابتدا لاگین کنید.");
+    const result = await verifyRefreshTokenService(refreshToken);
+    res.status(200).json({
+      error: null,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 module.exports = {
   sendOtpHandler,
   checkOtpHandler,
+  verifyRefreshTokenHandler,
 };

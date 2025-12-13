@@ -3,7 +3,6 @@ const ProductSize = require("../models/product_size.model");
 const Product = require("../models/product.model");
 const ProductColor = require("../models/product_color.model");
 const ProductDetail = require("../models/product_detail.model");
-const ProductSize = require("../models/product_size.model");
 const { ProductType } = require("../utils/product.constant");
 
 async function createProductService(data) {

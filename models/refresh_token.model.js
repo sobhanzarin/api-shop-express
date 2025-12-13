@@ -1,21 +1,20 @@
 const { Model, DataTypes } = require("@sequelize/core");
 const sequelize = require("../config/db.config");
 
-class OtpCode extends Model {}
-OtpCode.init(
+class refreshToken extends Model {}
+refreshToken.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     userId: { type: DataTypes.INTEGER, allowNull: false },
-    otp: { type: DataTypes.STRING(5), allowNull: false },
-    expires_otp: { type: DataTypes.DATE, allowNull: false },
+    token: { type: DataTypes.TEXT, allowNull: false },
   },
   {
     sequelize,
-    modelName: "OtpCode",
-    tableName: "otp_code",
+    modelName: "refreshToken",
+    tableName: "refresh_token",
     createdAt: "created_at",
-    updatedAt: "updated_at",
+    updatedAt: false,
   }
 );
 
-module.exports = OtpCode;
+module.exports = refreshToken;

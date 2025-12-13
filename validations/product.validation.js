@@ -7,7 +7,7 @@ const createProductValidation = validate({
     price: Joi.number().optional().allow(null),
     discount: Joi.number().optional().allow(null),
     type: Joi.string()
-      .valid(...Object.vslues(ProductType))
+      .valid(...Object.values(ProductType))
       .required(),
     count: Joi.number().optional().allow(null),
     active_discount: Joi.boolean().optional().allow(null),
